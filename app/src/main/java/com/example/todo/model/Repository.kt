@@ -5,9 +5,11 @@ import com.beust.klaxon.Klaxon
 import java.text.SimpleDateFormat
 import java.util.*
 
-//serve para abstrair os detalhes técnicos da fonte de dados
-//poupa o restante de saber se é um arquivo, um banco SQL, etc
-//não há mas seria ideal unit tests
+/**
+ *serve para abstrair os detalhes técnicos da fonte de dados
+ *poupa o restante de saber se é um arquivo, um banco SQL, etc
+ * não há mas seria ideal unit tests
+ */
 class Repository {
 
     private var tasks: List<Task>? = null
@@ -33,7 +35,7 @@ class Repository {
     /**
      * Load items rom the data source.
      */
-    fun lodData(inputStream: InputStream) {
+    fun loadData(inputStream: InputStream) {
         tasks = Klaxon().parseArray<TaskJson>(inputStream)?.map { it.toTask() } ?: emptyList()
     }
 
