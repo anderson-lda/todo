@@ -1,0 +1,51 @@
+[
+  {
+    "id": 1,
+    "title": "Ir no mercado",
+    "deadline": "2023-04-09 16:50:00",
+    "tags": "market, supermarket, shopping",
+    "completed": "N"
+  },
+  {
+    "id": 2,
+    "title": "Correr",
+    "deadline": "2023-04-02 18:50:00",
+    "tags": "run, healthy, walk, sun",
+    "completed": "N"
+  },
+  {
+    "id": 3,
+    "title": "Correr",
+    "deadline": "2023-04-12 18:50:00",
+    "tags": "run, healthy, walk, sun",
+    "completed": "N"
+  },
+  {
+    "id": 4,
+    "title": "Ir no banco",
+    "deadline": "2023-04-06 11:00:00",
+    "tags": "bank, money, account",
+    "completed": "N"
+  },
+  {
+    "id": 5,
+    "title": "Aniversário",
+    "deadline": "2023-04-24 08:00:00",
+    "tags": "birthday, celebration, gift",
+    "completed": "N"
+  },
+  {
+    "id": 6,
+    "title": "Ir no banco",
+    "deadline": "2022-11-26 11:00:00",
+    "tags": "bank, money, account",
+    "completed": "Y"
+  },
+  {
+    "id": 7,
+    "title": "Ir no banco",
+    "deadline": "2023-04-06 11:00:00",
+    "tags": "bank, money, account",
+    "completed": "N"
+  }
+]
