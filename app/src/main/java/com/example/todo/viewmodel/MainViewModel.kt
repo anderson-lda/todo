@@ -35,5 +35,5 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getByTag(tag: String) = repository.getByTag(tag)
 
-    fun getAllTags = repository.getTags()
+    fun getAllTags() = repository.getTags()
 }

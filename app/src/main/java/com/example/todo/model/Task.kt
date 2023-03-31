@@ -1,6 +1,7 @@
 package com.example.todo.model
 
-import java.util.Date
+import java.text.SimpleDateFormat
+import java.util.*
 
 data class Task(
     var id: Long,
@@ -9,5 +10,6 @@ data class Task(
     var completed: Boolean,
     var tags: List<String>
 ) {
-
+    fun formattedDeadline(): String =
+        SimpleDateFormat("dd/MM/yyyy", Locale.US).format(deadline)
 }
