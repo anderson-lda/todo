@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.todo.databinding.FragmentListBinding
 import com.example.todo.viewmodel.MainViewModel
@@ -16,6 +17,13 @@ import com.example.todo.viewmodel.MainViewModel
 class ListFragment: Fragment() {
     private lateinit var binding: FragmentListBinding
     private val viewModel: MainViewModel by activityViewModels()
+    private val args: ListFragmentArgs by navArgs()
+
+    enum class FilterCriteria {
+        ALL,
+        COMPLETED,
+        OVERDUE
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +39,13 @@ class ListFragment: Fragment() {
         super.onStart()
 
         binding.recyclerViewList.apply {
-            adapter = TaskAdapter(viewModel.getPending())
+            val tasks = when (args.filterCriteria as FilterCriteria){
+                FilterCriteria.ALL -> viewModel.getAll()
+                FilterCriteria.OVERDUE -> viewModel.getOverdue()
+                FilterCriteria.COMPLETED -> viewModel.getPending()
+            }.sortedBy { task -> task.deadline }
+
+            adapter = TaskAdapter(tasks)
             addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
         }
     }
