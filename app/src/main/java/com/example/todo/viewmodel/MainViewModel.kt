@@ -23,7 +23,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     //métodos que a view vai utilizar para acessar a viewmodel
-    fun getAll() = repository.getPending()
+    //fun getAll() = repository.getPending()
 
     fun getOverdue() = repository.getOverdue()
 

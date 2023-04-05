@@ -40,9 +40,9 @@ class ListFragment: Fragment() {
 
         binding.recyclerViewList.apply {
             val tasks = when (args.filterCriteria as FilterCriteria){
-                FilterCriteria.ALL -> viewModel.getAll()
+                FilterCriteria.ALL -> viewModel.getPending()
                 FilterCriteria.OVERDUE -> viewModel.getOverdue()
-                FilterCriteria.COMPLETED -> viewModel.getPending()
+                FilterCriteria.COMPLETED -> viewModel.getCompleted()
             }.sortedBy { task -> task.deadline }
 
             adapter = TaskAdapter(tasks)
