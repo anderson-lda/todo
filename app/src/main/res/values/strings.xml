@@ -14,4 +14,6 @@
     <string name="menu_item_all_tasks">All tasks</string>
     <string name="menu_item_overdue">Overdue</string>
     <string name="menu_item_completed">Completed</string>
+    <string name="menu_item_tags">Tags</string>
+    <string name="tag_title">TAG: %s</string>
 </resources>

@@ -10,6 +10,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.example.todo.databinding.FragmentListBinding
 import com.example.todo.viewmodel.MainViewModel
+import java.util.logging.Filter
 
 /**
  * Fragmento que mostra uma recyclerview.
@@ -22,7 +23,8 @@ class ListFragment: Fragment() {
     enum class FilterCriteria {
         ALL,
         COMPLETED,
-        OVERDUE
+        OVERDUE,
+        TAG
     }
 
     override fun onCreateView(
@@ -43,6 +45,7 @@ class ListFragment: Fragment() {
                 FilterCriteria.ALL -> viewModel.getPending()
                 FilterCriteria.OVERDUE -> viewModel.getOverdue()
                 FilterCriteria.COMPLETED -> viewModel.getCompleted()
+                FilterCriteria.TAG -> viewModel.getByTag(args.tag)
             }.sortedBy { task -> task.deadline }
 
             adapter = TaskAdapter(tasks)
