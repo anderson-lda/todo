@@ -1,6 +1,7 @@
 package com.example.todoasync
 
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.ui.AppBarConfiguration
@@ -37,6 +38,9 @@ class MainActivity : AppCompatActivity() {
         viewModel.isDataReady.observe(this){isReady ->
             if(isReady){
                 configureDynamicMenu()
+                binding.indeterminateBar.visibility = View.INVISIBLE
+            }else{
+                binding.indeterminateBar.visibility = View.VISIBLE
             }
         }
     }
