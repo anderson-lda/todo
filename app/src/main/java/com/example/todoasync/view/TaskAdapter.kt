@@ -1,4 +1,4 @@
-package com.example.todo.view
+package com.example.todoasync.view
 
 import android.graphics.Paint
 import android.view.LayoutInflater
@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.todo.R
-import com.example.todo.databinding.ListItemBinding
-import com.example.todo.model.Task
+import com.example.todoasync.R
+import com.example.todoasync.databinding.ListItemBinding
+import com.example.todoasync.model.Task
 import java.util.*
 
 class TaskAdapter(private val tasks: List<Task>): RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {

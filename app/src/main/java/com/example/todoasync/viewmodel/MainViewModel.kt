@@ -1,8 +1,12 @@
-package com.example.todo.viewmodel
+package com.example.todoasync.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.example.todo.model.Repository
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
+import com.example.todoasync.model.Repository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * inicializa o repositório e abstrai seus métodos para que a view consiga acessar
@@ -11,15 +15,24 @@ import com.example.todo.model.Repository
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     companion object { //armazena o nome do arquivo, para ficar mais fácil
-        const val tasksFile = "tasks.json"
+        const val tasksFile = "tasks_huge.json"
     }
 
     private val repository = Repository()
 
+    val isDataReady = MutableLiveData(false)
+
     init { //construtor
-        application.resources.assets.open(tasksFile).use {
-            repository.loadData(it)
+        viewModelScope.launch(Dispatchers.IO){
+            application.resources.assets.open(tasksFile).use {
+                repository.loadData(it)
+            }
+            //se fosse .value não funcionaria porque os livedata só são
+            //editáveis dentro de sua thread e aqui ele está em outra
+            //(do IO)
+            isDataReady.postValue(true)
         }
+
     }
 
     //métodos que a view vai utilizar para acessar a viewmodel

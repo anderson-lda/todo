@@ -7,10 +7,10 @@
     <fragment
         android:id="@+id/destination_task_list"
         android:label="{title}"
-        android:name="com.example.todo.view.ListFragment" >
+        android:name="com.example.todoasync.view.ListFragment" >
         <argument
             android:name="filterCriteria"
-            app:argType="com.example.todo.view.ListFragment$FilterCriteria"
+            app:argType="com.example.todoasync.view.ListFragment$FilterCriteria"
             android:defaultValue="ALL" />
         <argument
             android:name="tag"

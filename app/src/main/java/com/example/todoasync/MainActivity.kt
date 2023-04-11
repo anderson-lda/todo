@@ -1,11 +1,8 @@
-package com.example.todo
+package com.example.todoasync
 
 import android.os.Bundle
-import android.view.Menu
 import androidx.activity.viewModels
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -14,10 +11,10 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.navigation.fragment.NavHostFragment
-import com.example.todo.databinding.ActivityMainBinding
-import com.example.todo.view.ListFragment
-import com.example.todo.view.ListFragmentDirections
-import com.example.todo.viewmodel.MainViewModel
+import com.example.todoasync.databinding.ActivityMainBinding
+import com.example.todoasync.view.ListFragment
+import com.example.todoasync.view.ListFragmentDirections
+import com.example.todoasync.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,8 +33,12 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
 
         initComponents()
-        configureDynamicMenu()
         configureStaticMenu()
+        viewModel.isDataReady.observe(this){isReady ->
+            if(isReady){
+                configureDynamicMenu()
+            }
+        }
     }
 
     private fun initComponents(){

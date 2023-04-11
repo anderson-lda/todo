@@ -1,4 +1,4 @@
-package com.example.todo.view
+package com.example.todoasync.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,9 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DividerItemDecoration
-import com.example.todo.databinding.FragmentListBinding
-import com.example.todo.viewmodel.MainViewModel
-import java.util.logging.Filter
+import com.example.todoasync.databinding.FragmentListBinding
+import com.example.todoasync.viewmodel.MainViewModel
 
 /**
  * Fragmento que mostra uma recyclerview.
@@ -40,16 +39,20 @@ class ListFragment: Fragment() {
     override fun onStart() {
         super.onStart()
 
-        binding.recyclerViewList.apply {
-            val tasks = when (args.filterCriteria as FilterCriteria){
-                FilterCriteria.ALL -> viewModel.getPending()
-                FilterCriteria.OVERDUE -> viewModel.getOverdue()
-                FilterCriteria.COMPLETED -> viewModel.getCompleted()
-                FilterCriteria.TAG -> viewModel.getByTag(args.tag)
-            }.sortedBy { task -> task.deadline }
+        viewModel.isDataReady.observe(viewLifecycleOwner) { isReady ->
+            if(isReady) {
+                val adapter = TaskAdapter(when (args.filterCriteria as FilterCriteria){
+                    FilterCriteria.ALL -> viewModel.getPending()
+                    FilterCriteria.OVERDUE -> viewModel.getOverdue()
+                    FilterCriteria.COMPLETED -> viewModel.getCompleted()
+                    FilterCriteria.TAG -> viewModel.getByTag(args.tag)
+                }.sortedBy { task -> task.deadline })
 
-            adapter = TaskAdapter(tasks)
-            addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
+                binding.recyclerViewList.apply {
+                    addItemDecoration(DividerItemDecoration(this.context, DividerItemDecoration.VERTICAL))
+                }
+                binding.recyclerViewList.swapAdapter(adapter, false)
+            }
         }
     }
 }

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.todo'
+    namespace 'com.example.todoasync'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.todo"
+        applicationId "com.example.todoasync"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -46,6 +46,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
     implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0'
     implementation 'com.beust:klaxon:5.5'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
