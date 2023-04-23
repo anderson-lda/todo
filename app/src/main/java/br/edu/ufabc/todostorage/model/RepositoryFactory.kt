@@ -5,10 +5,14 @@ import android.app.Application
 class RepositoryFactory(private val application: Application) {
 
     enum class Type {
-        WebService
+        WebService,
+        InMemory,
+        Cached
     }
 
-    fun create(type: Type = Type.WebService) = when (type) {
+    fun create(type: Type = Type.Cached) = when (type) {
         Type.WebService -> RepositoryWebService()
+        Type.InMemory -> RepositoryInMemory(false)
+        Type.Cached -> RepositoryCached(application)
     }
 }

@@ -1,6 +1,8 @@
 package br.edu.ufabc.todostorage.model
 
 interface Repository {
+    suspend fun getAll(): Tasks
+
     /**
      * Fetch a list of pending tasks.
      * @return the list of tasks
@@ -48,6 +50,8 @@ interface Repository {
     suspend fun add(task: Task): Long
 
     suspend fun removeById(id: Long)
+
+    suspend fun removeAll()
 
     suspend fun refresh()
 }

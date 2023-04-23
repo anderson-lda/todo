@@ -83,7 +83,7 @@ class RepositoryWebService : Repository {
      * Fetch a list of all tasks.
      * @return the list of tasks
      */
-    suspend fun getAll(): Tasks = withContext(Dispatchers.IO) {
+    override suspend fun getAll(): Tasks = withContext(Dispatchers.IO) {
         service.list().let { response ->
             checkResponseCodes(response)
             response.body()?.items ?: throw Exception("Failed to retrieve all tasks")
@@ -176,6 +176,8 @@ class RepositoryWebService : Repository {
     override suspend fun removeById(id: Long) = withContext(Dispatchers.IO) {
         checkResponseCodes(service.deleteById(id))
     }
+
+    override suspend fun removeAll() { }
 
     override suspend fun refresh() { }
 }
