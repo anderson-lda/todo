@@ -4,7 +4,7 @@ import android.app.Application
 
 class RepositoryCached(application: Application) : Repository {
     private val repositoryRemote = RepositoryFactory(application).create(RepositoryFactory.Type.WebService)
-    private val repositoryLocal = RepositoryFactory(application).create(RepositoryFactory.Type.InMemory)
+    private val repositoryLocal = RepositoryFactory(application).create(RepositoryFactory.Type.File)
 
     override suspend fun getAll(): Tasks = repositoryLocal.getAll()
 
