@@ -1,4 +1,4 @@
-package br.edu.ufabc.todostorage
+package br.edu.ufabc.todocloud
 
 import android.os.Bundle
 import android.util.Log
@@ -7,14 +7,17 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.forEach
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupWithNavController
-import br.edu.ufabc.todostorage.databinding.ActivityMainBinding
-import br.edu.ufabc.todostorage.view.FilterCriteria
-import br.edu.ufabc.todostorage.view.ListFragmentDirections
-import br.edu.ufabc.todostorage.viewmodel.MainViewModel
+import br.edu.ufabc.todocloud.databinding.ActivityMainBinding
+import br.edu.ufabc.todocloud.view.FilterCriteria
+import br.edu.ufabc.todocloud.view.ListFragmentDirections
+import br.edu.ufabc.todocloud.viewmodel.MainViewModel
+import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -48,7 +51,7 @@ class MainActivity : AppCompatActivity() {
     private fun configureStaticMenu() = try {
         binding.navigationView.menu.forEach {
             it.setOnMenuItemClickListener { menuItem ->
-                val action = when (menuItem?.itemId) {
+                val action = when (menuItem.itemId) {
                     R.id.all_tasks -> ListFragmentDirections.filterTaskList(
                         filterCriteria = FilterCriteria.ALL,
                         title = getString(R.string.all_tasks_title)
@@ -104,7 +107,6 @@ class MainActivity : AppCompatActivity() {
                     is MainViewModel.Status.Loading -> {
                         binding.progressHorizontal.visibility = View.VISIBLE
                     }
-
                 }
             }
         }

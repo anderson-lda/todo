@@ -7,11 +7,11 @@
 
     <fragment
         android:id="@+id/destination_list"
-        android:name="br.edu.ufabc.todostorage.view.ListFragment"
+        android:name="br.edu.ufabc.todocloud.view.ListFragment"
         android:label="{title}" >
         <argument
             android:name="filter_criteria"
-            app:argType="br.edu.ufabc.todostorage.view.FilterCriteria"
+            app:argType="br.edu.ufabc.todocloud.view.FilterCriteria"
             android:defaultValue="ALL" />
         <argument
             android:name="title"
@@ -46,7 +46,7 @@
     <fragment
         android:id="@+id/destination_detail"
         android:label="Task details"
-        android:name="br.edu.ufabc.todostorage.view.DetailFragment">
+        android:name="br.edu.ufabc.todocloud.view.DetailFragment">
         <argument
             android:name="task_id"
             app:argType="long" />
@@ -69,7 +69,7 @@
 
     <fragment
         android:id="@+id/destination_add"
-        android:name="br.edu.ufabc.todostorage.view.AddFragment"
+        android:name="br.edu.ufabc.todocloud.view.AddFragment"
         android:label="New task">
 
         <action
@@ -79,7 +79,7 @@
 
     <fragment
         android:id="@+id/destination_edit"
-        android:name="br.edu.ufabc.todostorage.view.EditFragment"
+        android:name="br.edu.ufabc.todocloud.view.EditFragment"
         android:label="Edit task" >
         <argument
             android:name="task_id"

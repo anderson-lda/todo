@@ -1,4 +1,4 @@
-package br.edu.ufabc.todostorage.view
+package br.edu.ufabc.todocloud.view
 
 import android.app.DatePickerDialog
 import android.app.Dialog
@@ -9,6 +9,9 @@ import androidx.fragment.app.DialogFragment
 import java.text.SimpleDateFormat
 import java.util.*
 
+/**
+ * Date picker.
+ */
 class DatePickerFragment(private val field: TextView) : DialogFragment(),
     DatePickerDialog.OnDateSetListener {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog =

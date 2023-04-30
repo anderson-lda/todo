@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ToDo! Storage</string>
+    <string name="app_name">ToDo! Cloud</string>
     <string name="nav_header_title">ToDo!</string>
 
     <string name="all_tasks_title">All tasks</string>
@@ -29,4 +29,7 @@
     <string name="cancel_delete_contact_label">Cancel</string>
     <string name="confirm_delete_contact_label">Confirm</string>
     <string name="action_edit_title">Edit task</string>
+    <string name="sign_in_button">Sign-in</string>
+    <string name="app_logo">App logo</string>
+    <string name="action_sign_out_title">Sign out</string>
 </resources>

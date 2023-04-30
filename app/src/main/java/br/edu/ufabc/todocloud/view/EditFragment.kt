@@ -1,37 +1,39 @@
-package br.edu.ufabc.todostorage.view
+package br.edu.ufabc.todocloud.view
 
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
-import br.edu.ufabc.todostorage.R
-import br.edu.ufabc.todostorage.databinding.FragmentAddEditBinding
-import br.edu.ufabc.todostorage.model.Task
-import br.edu.ufabc.todostorage.viewmodel.MainViewModel
+import br.edu.ufabc.todocloud.R
+import br.edu.ufabc.todocloud.databinding.FragmentAddEditBinding
+import br.edu.ufabc.todocloud.model.Task
+import br.edu.ufabc.todocloud.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 
+/**
+ * Task editing screen.
+ */
 class EditFragment : Fragment() {
     private lateinit var binding: FragmentAddEditBinding
     private val args: EditFragmentArgs by navArgs()
     private val viewModel: MainViewModel by activityViewModels()
     private val taskCache = MutableLiveData<Task>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onStart() {
         super.onStart()
 
         binding.deadline.setOnClickListener {
-            DatePickerFragment(binding.deadline).show(requireActivity().supportFragmentManager, null)
+            DatePickerFragment(binding.deadline).show(
+                requireActivity().supportFragmentManager,
+                null
+            )
         }
 
         fetchTask()
@@ -44,6 +46,25 @@ class EditFragment : Fragment() {
     ): View {
         binding = FragmentAddEditBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val provider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_add_edit, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.action_save -> if (validateForm()) save()
+                }
+                return true
+            }
+
+        }
+
+        activity?.addMenuProvider(provider, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun fillForm() = taskCache.observe(viewLifecycleOwner) { task ->
@@ -63,14 +84,17 @@ class EditFragment : Fragment() {
             is MainViewModel.Status.Success -> {
                 taskCache.value = (status.result as MainViewModel.Result.SingleTask).value
                 fillForm()
+                binding.progressHorizontal.visibility = View.INVISIBLE
             }
-            is MainViewModel.Status.Loading -> binding.progressHorizontal.visibility = View.VISIBLE
+            is MainViewModel.Status.Loading -> {
+                binding.progressHorizontal.visibility = View.VISIBLE
+            }
             is MainViewModel.Status.Failure -> {
                 Log.e("FRAGMENT", "Failed to fetch item with id ${args.taskId} to update", status.e)
                 notifyError("Failed to show item")
+                binding.progressHorizontal.visibility = View.INVISIBLE
             }
         }
-        binding.progressHorizontal.visibility = View.INVISIBLE
     }
 
     private fun validateForm(): Boolean {
@@ -99,31 +123,21 @@ class EditFragment : Fragment() {
                                 popUpTo(R.id.destination_list)
                             })
                         }
+                        binding.progressHorizontal.visibility = View.INVISIBLE
                     }
                     is MainViewModel.Status.Loading ->
                         binding.progressHorizontal.visibility = View.VISIBLE
                     is MainViewModel.Status.Failure -> {
                         Log.e("FRAGMENT", "Failed to update item", status.e)
                         notifyError("Failed to update item")
+                        binding.progressHorizontal.visibility = View.INVISIBLE
                     }
                 }
-                binding.progressHorizontal.visibility = View.INVISIBLE
             }
         }
     }
 
     private fun notifyError(message: String) {
         Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_add_edit, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_save -> if (validateForm()) save()
-        }
-        return true
     }
 }

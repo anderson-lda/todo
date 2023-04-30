@@ -1,17 +1,19 @@
-package br.edu.ufabc.todostorage.view
+package br.edu.ufabc.todocloud.view
 
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import br.edu.ufabc.todostorage.R
-import br.edu.ufabc.todostorage.databinding.FragmentDetailBinding
-import br.edu.ufabc.todostorage.model.Task
-import br.edu.ufabc.todostorage.viewmodel.MainViewModel
+import br.edu.ufabc.todocloud.R
+import br.edu.ufabc.todocloud.databinding.FragmentDetailBinding
+import br.edu.ufabc.todocloud.model.Task
+import br.edu.ufabc.todocloud.viewmodel.MainViewModel
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
@@ -25,11 +27,6 @@ class DetailFragment : Fragment() {
     private val viewModel: MainViewModel by activityViewModels()
     private val taskCache = MutableLiveData<Task>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -38,6 +35,37 @@ class DetailFragment : Fragment() {
         binding = FragmentDetailBinding.inflate(inflater, container, false)
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val provider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.detail_menu, menu)
+                taskCache.observe(viewLifecycleOwner) { task ->
+                    if (task.completed) {
+                        menu.findItem(R.id.action_undo).isVisible = true
+                    } else {
+                        menu.findItem(R.id.action_complete).isVisible = true
+                    }
+                }
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.action_complete -> setComplete(true)
+                    R.id.action_undo -> setComplete(false)
+                    R.id.action_remove -> makeConfirmationDialog().show()
+                    R.id.action_edit -> DetailFragmentDirections.editItem(args.taskId).let {
+                        findNavController().navigate(it)
+                    }
+                }
+                return true
+            }
+
+        }
+
+        activity?.addMenuProvider(provider, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
     private fun fillTable() = taskCache.observe(viewLifecycleOwner) { task ->
@@ -49,17 +77,22 @@ class DetailFragment : Fragment() {
         task.tags?.sorted()?.apply {
             binding.tagsRow.visibility = View.VISIBLE
             forEach { tag ->
-                LayoutInflater.from(binding.tagsContainer.context).inflate(R.layout.chip, binding.tagsContainer, false).let { view ->
-                    (view as Chip).apply {
-                        text = tag
-                        setOnClickListener {
-                            DetailFragmentDirections.onTagClick(FilterCriteria.TAG, "Tag: $tag", tag).let {
-                                findNavController().navigate(it)
+                LayoutInflater.from(binding.tagsContainer.context)
+                    .inflate(R.layout.chip, binding.tagsContainer, false).let { view ->
+                        (view as Chip).apply {
+                            text = tag
+                            setOnClickListener {
+                                DetailFragmentDirections.onTagClick(
+                                    FilterCriteria.TAG,
+                                    "Tag: $tag",
+                                    tag
+                                ).let {
+                                    findNavController().navigate(it)
+                                }
                             }
+                            binding.tagsContainer.addView(this)
                         }
-                        binding.tagsContainer.addView(this)
                     }
-                }
             }
         }
     }
@@ -67,7 +100,7 @@ class DetailFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        binding.root.visibility = View.INVISIBLE
+        binding.tableLayout.visibility = View.INVISIBLE
         viewModel.getById(args.taskId).observe(viewLifecycleOwner) { status ->
             when (status) {
                 is MainViewModel.Status.Success -> try {
@@ -75,8 +108,8 @@ class DetailFragment : Fragment() {
 
                     this.taskCache.value = task
                     fillTable()
-                    binding.root.visibility = View.VISIBLE
                     binding.progressHorizontal.visibility = View.INVISIBLE
+                    binding.tableLayout.visibility = View.VISIBLE
                 } catch (e: Exception) {
                     Log.e("FRAGMENT", "Failed to render item", e)
                     notifyError("Failed to show item")
@@ -85,7 +118,11 @@ class DetailFragment : Fragment() {
                     binding.progressHorizontal.visibility = View.VISIBLE
                 }
                 is MainViewModel.Status.Failure -> {
-                    Log.e("VIEW", "Failed to obtain and render item with id ${args.taskId}", status.e)
+                    Log.e(
+                        "VIEW",
+                        "Failed to obtain and render item with id ${args.taskId}",
+                        status.e
+                    )
                     notifyError("Failed to fetch and show task")
                     binding.progressHorizontal.visibility = View.INVISIBLE
                 }
@@ -94,13 +131,15 @@ class DetailFragment : Fragment() {
     }
 
     private fun setComplete(state: Boolean) = taskCache.observe(viewLifecycleOwner) { task ->
-        viewModel.update(Task(
-            id = task.id,
-            title = task.title,
-            deadline = task.deadline,
-            tags = task.tags,
-            completed = state
-        )).observe(viewLifecycleOwner) { result ->
+        viewModel.update(
+            Task(
+                id = task.id,
+                title = task.title,
+                deadline = task.deadline,
+                tags = task.tags,
+                completed = state
+            )
+        ).observe(viewLifecycleOwner) { result ->
             when (result) {
                 is MainViewModel.Status.Loading -> {
                     binding.progressHorizontal.visibility = View.VISIBLE
@@ -113,7 +152,11 @@ class DetailFragment : Fragment() {
                 }
                 is MainViewModel.Status.Failure -> {
                     Log.e("VIEW", "Failed to change completion status", result.e)
-                    Snackbar.make(binding.root, "Failed to change completion status", Snackbar.LENGTH_LONG).show()
+                    Snackbar.make(
+                        binding.root,
+                        "Failed to change completion status",
+                        Snackbar.LENGTH_LONG
+                    ).show()
                     binding.progressHorizontal.visibility = View.INVISIBLE
                 }
             }
@@ -153,27 +196,4 @@ class DetailFragment : Fragment() {
             remove()
             dialog.dismiss()
         }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.detail_menu, menu)
-        taskCache.observe(viewLifecycleOwner) { task ->
-            if (task.completed) {
-                menu.findItem(R.id.action_undo).isVisible = true
-            } else {
-                menu.findItem(R.id.action_complete).isVisible = true
-            }
-        }
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_complete -> setComplete(true)
-            R.id.action_undo -> setComplete(false)
-            R.id.action_remove -> makeConfirmationDialog().show()
-            R.id.action_edit -> DetailFragmentDirections.editItem(args.taskId).let {
-                findNavController().navigate(it)
-            }
-        }
-        return true
-    }
 }

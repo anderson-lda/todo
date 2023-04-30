@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ToDo">
         <activity
-            android:name="br.edu.ufabc.todostorage.MainActivity"
+            android:name="br.edu.ufabc.todocloud.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ToDo.NoActionBar">
             <intent-filter>

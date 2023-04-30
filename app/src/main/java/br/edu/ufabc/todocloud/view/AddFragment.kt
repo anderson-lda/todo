@@ -1,27 +1,27 @@
-package br.edu.ufabc.todostorage.view
+package br.edu.ufabc.todocloud.view
 
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import br.edu.ufabc.todostorage.R
-import br.edu.ufabc.todostorage.databinding.FragmentAddEditBinding
-import br.edu.ufabc.todostorage.model.Task
-import br.edu.ufabc.todostorage.viewmodel.MainViewModel
+import br.edu.ufabc.todocloud.R
+import br.edu.ufabc.todocloud.databinding.FragmentAddEditBinding
+import br.edu.ufabc.todocloud.model.Task
+import br.edu.ufabc.todocloud.viewmodel.MainViewModel
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
+/**
+ * Task inserting screen.
+ */
 class AddFragment : Fragment() {
     private lateinit var binding: FragmentAddEditBinding
     private val viewModel: MainViewModel by activityViewModels()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,13 +33,35 @@ class AddFragment : Fragment() {
         return binding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val provider = object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_add_edit, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when (menuItem.itemId) {
+                    R.id.action_save -> {
+                        if (validate()) save()
+                    }
+                }
+                return true
+            }
+        }
+        activity?.addMenuProvider(provider, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
     override fun onStart() {
         super.onStart()
 
         binding.deadline.text = Task.formatDate(Date())
 
         binding.deadline.setOnClickListener {
-            DatePickerFragment(binding.deadline).show(requireActivity().supportFragmentManager, null)
+            DatePickerFragment(binding.deadline).show(
+                requireActivity().supportFragmentManager,
+                null
+            )
         }
     }
 
@@ -62,7 +84,7 @@ class AddFragment : Fragment() {
     private fun save() {
         parseForm().let { task ->
             viewModel.add(task).observe(viewLifecycleOwner) { status ->
-                when(status) {
+                when (status) {
                     is MainViewModel.Status.Success -> {
                         val insertedId = (status.result as MainViewModel.Result.Id).value
                         AddFragmentDirections.onAddSuccess(insertedId).let {
@@ -77,24 +99,12 @@ class AddFragment : Fragment() {
                     }
                     is MainViewModel.Status.Failure -> {
                         Log.e("FRAGMENT", "Failed to add item", status.e)
-                        Snackbar.make(binding.root, "Failed to add item", Snackbar.LENGTH_LONG).show()
+                        Snackbar.make(binding.root, "Failed to add item", Snackbar.LENGTH_LONG)
+                            .show()
                         binding.progressHorizontal.visibility = View.INVISIBLE
                     }
                 }
             }
         }
-
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_add_edit, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.action_save -> { if (validate()) save()}
-        }
-        return true
     }
 }

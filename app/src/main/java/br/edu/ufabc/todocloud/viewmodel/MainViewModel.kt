@@ -1,13 +1,13 @@
-package br.edu.ufabc.todostorage.viewmodel
+package br.edu.ufabc.todocloud.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.liveData
-import br.edu.ufabc.todostorage.model.RepositoryFactory
-import br.edu.ufabc.todostorage.model.Task
-import br.edu.ufabc.todostorage.model.Tasks
+import br.edu.ufabc.todocloud.model.RepositoryFactory
+import br.edu.ufabc.todocloud.model.Task
+import br.edu.ufabc.todocloud.model.Tasks
 
 /**
  * The shared view model.
@@ -27,33 +27,55 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     sealed class Status {
         /**
-         * The error class.
+         * The error status.
          * @property e the exception
          */
-        class Failure(val e: Exception): Status()
+        class Failure(val e: Exception) : Status()
 
         /**
-         * The success class.
+         * The success status.
+         * @property result the result
          */
         class Success(val result: Result) : Status()
 
+        /**
+         * The loading status.
+         */
         object Loading : Status()
     }
 
+    /**
+     * Refresh status hierarchy.
+     */
     sealed class RefreshStatus {
+        /**
+         * The loading status.
+         */
         object Loading : RefreshStatus()
+
+        /**
+         * The done status.
+         */
         object Done : RefreshStatus()
-        class Failure(val e: Exception): RefreshStatus()
+
+        /**
+         * The failure status.
+         * @property e the exception
+         */
+        class Failure(val e: Exception) : RefreshStatus()
     }
 
+    /**
+     * The result hierarchy.
+     */
     sealed class Result {
         /**
          * Result type that holds a list of tasks.
          * @property value the list of tasks
          */
-        data class TaskList (
+        data class TaskList(
             val value: Tasks
-        ): Result()
+        ) : Result()
 
         /**
          * Result type that holds a single task.
@@ -71,10 +93,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val value: List<String>
         ) : Result()
 
+        /**
+         * Result type that holds an id.
+         * @property value the id.
+         */
         data class Id(
             val value: Long
         ) : Result()
 
+        /**
+         * A Result without value.
+         */
         object EmptyResult : Result()
     }
 
@@ -172,25 +201,38 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             emit(Status.Loading)
             repository.update(task)
             emit(Status.Success(Result.EmptyResult))
+            _shouldRefresh.postValue(true)
         } catch (e: Exception) {
             emit(Status.Failure(Exception("Failed to update element", e)))
         }
     }
 
+    /**
+     * Add a new task.
+     * @param task the task
+     * @return the async status
+     */
     fun add(task: Task) = liveData {
         try {
             emit(Status.Loading)
             emit(Status.Success(Result.Id(repository.add(task))))
+            _shouldRefresh.postValue(true)
         } catch (e: Exception) {
             emit(Status.Failure(Exception("Failed to add element", e)))
         }
     }
 
+    /**
+     * Remove a task given its id.
+     * @param id the id
+     * @return the async status
+     */
     fun remove(id: Long) = liveData {
         try {
             emit(Status.Loading)
             repository.removeById(id)
             emit(Status.Success(Result.EmptyResult))
+            _shouldRefresh.postValue(true)
         } catch (e: Exception) {
             emit(Status.Failure(Exception("Failed to remove element", e)))
         }

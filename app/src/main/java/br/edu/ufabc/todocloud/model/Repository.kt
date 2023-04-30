@@ -1,6 +1,14 @@
-package br.edu.ufabc.todostorage.model
+package br.edu.ufabc.todocloud.model
 
+/**
+ * General API for repositories.
+ */
 interface Repository {
+
+    /**
+     * Fetch a list of all tasks.
+     * @return the list of tasks
+     */
     suspend fun getAll(): Tasks
 
     /**
@@ -47,11 +55,26 @@ interface Repository {
      */
     suspend fun update(task: Task)
 
+    /**
+     * Add a new task.
+     * @param task the task
+     * @return the id of the added item
+     */
     suspend fun add(task: Task): Long
 
+    /**
+     * Remove a task by id.
+     * @param id the id
+     */
     suspend fun removeById(id: Long)
 
+    /**
+     * Remove all tasks.
+     */
     suspend fun removeAll()
 
+    /**
+     * Refresh the repository.
+     */
     suspend fun refresh()
 }
