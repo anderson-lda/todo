@@ -14,6 +14,7 @@ import br.edu.ufabc.todocloud.R
 import br.edu.ufabc.todocloud.databinding.FragmentListBinding
 
 import br.edu.ufabc.todocloud.viewmodel.MainViewModel
+import com.firebase.ui.auth.AuthUI
 import com.google.android.material.snackbar.Snackbar
 
 /**
@@ -62,6 +63,11 @@ class ListFragment : Fragment() {
                                     .show()
                                 binding.progressHorizontal.visibility = View.INVISIBLE
                             }
+                        }
+                    }
+                    R.id.action_sign_out -> AuthUI.getInstance().signOut(requireContext()).addOnCompleteListener{
+                        ListFragmentDirections.onSignOut().let {
+                            findNavController().navigate(it)
                         }
                     }
                 }

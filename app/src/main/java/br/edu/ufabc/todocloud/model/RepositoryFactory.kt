@@ -12,14 +12,16 @@ class RepositoryFactory(private val application: Application) {
      * The types of repositories.
      */
     enum class Type {
-        Firestore
+        Firestore,
+        FirestoreAuth
     }
 
     /**
      * Create a new repository given its type.
      * @param type the repository type
      */
-    fun create(type: Type = Type.Firestore) = when (type) {
+    fun create(type: Type = Type.FirestoreAuth) = when (type) {
         Type.Firestore -> RepositoryFirestore(application)
+        Type.FirestoreAuth -> RepositoryFirestoreAuth(application)
     }
 }

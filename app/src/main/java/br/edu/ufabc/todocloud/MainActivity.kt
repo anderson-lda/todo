@@ -46,6 +46,12 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         binding.toolbar.setupWithNavController(getNavController(), appBarConfiguration)
         binding.navigationView.setupWithNavController(getNavController())
+
+        getNavController().addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.destination_auth -> binding.toolbar.navigationIcon = null
+            }
+        }
     }
 
     private fun configureStaticMenu() = try {
