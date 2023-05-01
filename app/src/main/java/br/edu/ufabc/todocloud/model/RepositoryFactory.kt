@@ -20,6 +20,6 @@ class RepositoryFactory(private val application: Application) {
      * @param type the repository type
      */
     fun create(type: Type = Type.Firestore) = when (type) {
-        Type.Firestore -> RepositoryFirestore()
+        Type.Firestore -> RepositoryFirestore(application)
     }
 }
